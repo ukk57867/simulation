@@ -137,7 +137,170 @@
   <div id="log"></div>
 
   <script>
-    document.getElementById('log').innerHTML = '<p><em>Trading-Logik wird gleich geladen...</em></p>';
-  </script>
+const cryptos = ['BTC', 'ETH', 'DOGE'];
+let capital = 50.0;
+let holdings = { BTC: 0, ETH: 0, DOGE: 0 };
+let prices = { BTC: 30000, ETH: 2000, DOGE: 0.1 };
+let time = 0;
+let orders = [];
+let speed = 1;
+let autoSim = false;
+let autoStopAt = 24;
+
+function updateDisplay() {
+  document.getElementById('capital').textContent = capital.toFixed(2);
+  document.getElementById('netWorth').textContent = (capital + totalHoldings()).toFixed(2);
+  document.getElementById('simTime').textContent = 'Tag ' + Math.floor(time / 24 + 1) + ', ' + (time % 24) + ' Uhr';
+  updateOrders();
+  updateCharts();
+  updatePerformance();
+}
+
+function simulateHours(hours = 1) {
+  for (let h = 0; h < hours; h++) {
+    time++;
+    simulatePrices();
+    checkOrders();
+  }
+  updateDisplay();
+}
+
+function simulateDay() {
+  simulateHours(24);
+}
+
+function simulatePrices() {
+  for (const coin of cryptos) {
+    const change = 1 + (Math.random() - 0.5) * 0.02;
+    prices[coin] *= change;
+  }
+}
+
+function totalHoldings() {
+  return cryptos.reduce((sum, coin) => sum + holdings[coin] * prices[coin], 0);
+}
+
+function placeOrder() {
+  const coin = document.getElementById('orderCoin').value;
+  const type = document.getElementById('orderType').value;
+  const price = parseFloat(document.getElementById('orderPrice').value);
+  if (!coin || !type || isNaN(price)) return;
+  orders.push({ coin, type, price });
+  log('Neue Order: ' + type + ' ' + coin + ' @ ' + price.toFixed(2));
+  updateOrders();
+}
+
+function updateOrders() {
+  const list = document.getElementById('orderList');
+  list.innerHTML = '';
+  orders.forEach((o, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${o.type} ${o.coin} @ ${o.price.toFixed(2)}`;
+    list.appendChild(li);
+  });
+}
+
+function checkOrders() {
+  orders = orders.filter(o => {
+    const market = prices[o.coin];
+    if (o.type === 'buyLimit' && market <= o.price && capital >= market) {
+      holdings[o.coin]++;
+      capital -= market;
+      log('Buy-Limit ausgeführt: 1 ' + o.coin + ' @ ' + market.toFixed(2));
+      return false;
+    }
+    if (o.type === 'sellLimit' && market >= o.price && holdings[o.coin] >= 1) {
+      holdings[o.coin]--;
+      capital += market;
+      log('Sell-Limit ausgeführt: 1 ' + o.coin + ' @ ' + market.toFixed(2));
+      return false;
+    }
+    if (o.type === 'stopLoss' && market <= o.price && holdings[o.coin] >= 1) {
+      holdings[o.coin]--;
+      capital += market;
+      log('Stop-Loss ausgeführt: 1 ' + o.coin + ' @ ' + market.toFixed(2));
+      return false;
+    }
+    if (o.type === 'stopBuy' && market >= o.price) {
+      holdings[o.coin] -= 1;
+      capital += market;
+      log('Short Buy (Leerverkauf): 1 ' + o.coin + ' @ ' + market.toFixed(2));
+      return false;
+    }
+    return true;
+  });
+}
+
+function log(msg) {
+  const el = document.getElementById('log');
+  el.innerHTML += `<div>${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function toggleAutoSim() {
+  autoSim = !autoSim;
+  document.getElementById('autoSimBtn').textContent = autoSim ? 'Auto stoppen' : 'Auto starten';
+  if (autoSim) autoStep();
+}
+
+function autoStep() {
+  if (!autoSim || time >= autoStopAt) {
+    autoSim = false;
+    document.getElementById('autoSimBtn').textContent = 'Auto starten';
+    return;
+  }
+  simulateHours(1);
+  setTimeout(autoStep, 1000 / speed);
+}
+
+function updateSpeed() {
+  speed = parseFloat(document.getElementById('speedRange').value);
+  document.getElementById('speedLabel').textContent = speed.toFixed(1) + 'x';
+}
+
+function updateCharts() {
+  if (!window.chartData) {
+    window.chartData = {};
+    const container = document.getElementById('cryptos');
+    cryptos.forEach(coin => {
+      const div = document.createElement('div');
+      div.className = 'crypto-container';
+      div.innerHTML = `<h3>${coin}</h3><canvas id="chart_${coin}"></canvas>`;
+      container.appendChild(div);
+      window.chartData[coin] = {
+        prices: [prices[coin]],
+        chart: new Chart(document.getElementById('chart_' + coin), {
+          type: 'line',
+          data: {
+            labels: [0],
+            datasets: [{ data: [prices[coin]], label: coin }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        })
+      };
+    });
+  } else {
+    cryptos.forEach(coin => {
+      const data = window.chartData[coin];
+      data.prices.push(prices[coin]);
+      data.chart.data.labels.push(time);
+      data.chart.data.datasets[0].data = data.prices;
+      data.chart.update();
+    });
+  }
+}
+
+function updatePerformance() {
+  const ul = document.getElementById('performance');
+  ul.innerHTML = '';
+  cryptos.forEach(coin => {
+    const li = document.createElement('li');
+    li.textContent = `${coin}: ${holdings[coin]} @ ${prices[coin].toFixed(2)} = ${(holdings[coin] * prices[coin]).toFixed(2)} €`;
+    ul.appendChild(li);
+  });
+}
+
+updateDisplay();
+</script>
 </body>
 </html>
