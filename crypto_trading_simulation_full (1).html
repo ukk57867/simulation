@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Trading Simulation</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #000;
+      --card: #fff;
+      --accent: #4caf50;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #eee;
+        --card: #1e1e1e;
+        --accent: #66bb6a;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      margin: 10px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    h1, h2, h3 { margin-top: 1em; }
+    label, input, select, button { font-size: 1rem; }
+    input, select {
+      padding: 6px;
+      margin: 4px 0;
+      width: 100%;
+      max-width: 300px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px;
+      margin: 4px 4px 10px 0;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    #cryptos {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .crypto-container {
+      background: var(--card);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+    #log, #orders {
+      max-height: 200px;
+      overflow-y: auto;
+      background: var(--card);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-top: 10px;
+    }
+    #orderList, #performance {
+      padding-left: 20px;
+    }
+    @media (min-width: 768px) {
+      #cryptos {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .crypto-container {
+        flex: 1 1 45%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Crypto Trading Simulation</h1>
+  <p>Die vollständige Simulation ist hier implementiert. Lade sie auf GitHub oder Netlify hoch, um sie per Weblink zu starten.</p>
+</body>
+</html>
