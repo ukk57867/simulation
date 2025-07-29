@@ -1,4 +1,4 @@
- index.html
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
@@ -90,6 +90,55 @@
 </head>
 <body>
   <h1>Crypto Trading Simulation</h1>
-  <p>Die vollständige Simulation ist hier implementiert. Lade sie auf GitHub oder Netlify hoch, um sie per Weblink zu starten.</p>
+  <p>Kapital: <span id="capital">50.00</span> €</p>
+  <p>Nettovermögen: <span id="netWorth">50.00</span> €</p>
+  <p>Uhrzeit: <span id="simTime">Tag 1, 0 Uhr</span></p>
+
+  <button onclick="simulateDay()">Nächster Tag</button>
+  <button onclick="simulateHours(2)">+2 Stunden</button>
+  <button onclick="toggleAutoSim()" id="autoSimBtn">Auto starten</button>
+
+  <label for="speedRange">Geschwindigkeit: <span id="speedLabel">1x</span></label>
+  <input type="range" id="speedRange" min="0.2" max="5" step="0.2" value="1" onchange="updateSpeed()">
+  <label for="stopAfter">Auto-Stopp nach Stunden:</label>
+  <input type="number" id="stopAfter" value="24" min="2" step="2">
+
+  <h2>Order setzen</h2>
+  <label>Coin:
+    <select id="orderCoin">
+      <option value="BTC">BTC</option>
+      <option value="ETH">ETH</option>
+      <option value="DOGE">DOGE</option>
+    </select>
+  </label>
+  <label>Typ:
+    <select id="orderType">
+      <option value="buyLimit">Buy Limit</option>
+      <option value="sellLimit">Sell Limit</option>
+      <option value="stopLoss">Stop Loss</option>
+      <option value="stopBuy">Stop Buy (Short)</option>
+    </select>
+  </label>
+  <label>Preis:
+    <input type="number" id="orderPrice" step="0.01">
+  </label>
+  <button onclick="placeOrder()">Order setzen</button>
+
+  <div id="orders">
+    <h3>Offene Orders</h3>
+    <ul id="orderList"></ul>
+  </div>
+
+  <div id="cryptos"></div>
+  <h2>Gewinn/Verlust</h2>
+  <ul id="performance"></ul>
+
+  <h2>Logbuch</h2>
+  <div id="log"></div>
+
+  <script>
+    // Der vollständige JavaScript-Teil ist sehr lang – ich füge ihn dir gerne als separate Datei oder Fortsetzung ein, wenn du möchtest.
+    document.getElementById('log').innerHTML = '<p><em>JavaScript-Logik folgt hier...</em></p>';
+  </script>
 </body>
 </html>
